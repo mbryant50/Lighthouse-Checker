@@ -29,6 +29,16 @@ const LighthouseChecker = () => {
     }
   };
 
+  const getScoreLabel = (score) => {
+    if (score >= 90) return { text: "Excellent", color: "text-green-600 font-bold" };
+    if (score >= 80) return { text: "Good", color: "text-green-500 font-semibold" };
+    if (score >= 70) return { text: "Fair", color: "text-yellow-500 font-medium" };
+    if (score >= 60) return { text: "Needs Attention", color: "text-yellow-600 font-medium" };
+    if (score >= 50) return { text: "Concerning", color: "text-orange-500 font-semibold" };
+    if (score >= 40) return { text: "Poor", color: "text-orange-600 font-bold" };
+    return { text: "Desperate", color: "text-red-600 font-extrabold" };
+  };
+
   const fetchLighthouseScores = async () => {
     if (!url) return;
     setLoading(true);
@@ -50,6 +60,10 @@ const LighthouseChecker = () => {
         throw new Error(data.error.message);
       }
 
+      if (!data.lighthouseResult) {
+        throw new Error("Unexpected API response structure.");
+      }
+
       setScores({
         performance: data.lighthouseResult.categories.performance.score * 100,
         accessibility: data.lighthouseResult.categories.accessibility.score * 100,
@@ -68,14 +82,26 @@ const LighthouseChecker = () => {
       {!isApiKeyValid ? (
         <div>
           <h2 className="text-xl font-semibold mb-4">Enter API Key</h2>
-          <Input type="text" placeholder="Enter your Google API Key" value={apiKey} onChange={(e) => setApiKey(e.target.value)} className="mb-3" />
+          <Input
+            type="text"
+            placeholder="Enter your Google API Key"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            className="mb-3"
+          />
           <Button onClick={validateApiKey}>Validate API Key</Button>
           {error && <p className="text-red-500 mt-3">{error}</p>}
         </div>
       ) : (
         <div>
           <h2 className="text-xl font-semibold mb-4">Lighthouse Score Checker</h2>
-          <Input type="text" placeholder="Enter website URL" value={url} onChange={(e) => setUrl(e.target.value)} className="mb-3" />
+          <Input
+            type="text"
+            placeholder="Enter website URL"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            className="mb-3"
+          />
           <Button onClick={fetchLighthouseScores} disabled={loading}>
             {loading ? "Checking..." : "Check Scores"}
           </Button>
@@ -83,11 +109,14 @@ const LighthouseChecker = () => {
           {scores && (
             <Card className="mt-5">
               <div className="p-4">
-                {Object.entries(scores).map(([key, value]) => (
-                  <p key={key} className="font-bold">
-                    <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong> {value}
-                  </p>
-                ))}
+                {Object.entries(scores).map(([key, value]) => {
+                  const { text, color } = getScoreLabel(value);
+                  return (
+                    <p key={key} className={`${color}`}>
+                      <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong> {value} ({text})
+                    </p>
+                  );
+                })}
               </div>
             </Card>
           )}
