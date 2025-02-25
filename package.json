@@ -2,6 +2,7 @@
   "name": "lighthouse-checker",
   "version": "0.1.0",
   "private": true,
+  "main": "main.js",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -12,11 +13,18 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "electron": "^34.2.0",
+    "electron-packager": "^17.1.2"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "package-win": "electron-packager . LighthouseChecker --platform=win32 --arch=x64 --out=dist/ --overwrite",
+    "package-mac": "electron-packager . LighthouseChecker --platform=darwin --arch=x64 --out=dist/ --overwrite"
   },
   "eslintConfig": {
     "extends": ["react-app", "react-app/jest"]
@@ -24,8 +32,5 @@
   "browserslist": {
     "production": [">0.2%", "not dead", "not op_mini all"],
     "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
-  },
-  "devDependencies": {
-    "electron": "^34.2.0"
   }
 }
